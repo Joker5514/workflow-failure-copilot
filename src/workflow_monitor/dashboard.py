@@ -34,10 +34,16 @@ class Dashboard:
         self.port = port or config.dashboard_port
         self.secret_key = secret_key or config.dashboard_secret_key
 
+        # Use absolute paths for templates and static files
+        import os
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        template_dir = os.path.join(base_dir, "templates")
+        static_dir = os.path.join(base_dir, "static")
+
         self.app = Flask(
             __name__,
-            template_folder="../templates",
-            static_folder="../static",
+            template_folder=template_dir,
+            static_folder=static_dir,
         )
         self.app.secret_key = self.secret_key
 

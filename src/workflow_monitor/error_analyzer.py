@@ -53,7 +53,9 @@ class ErrorAnalyzer:
                 from openai import OpenAI
                 self.client = OpenAI(api_key=self.api_key)
             except ImportError:
-                raise ImportError("openai package is required. Install with: pip install openai")
+                raise ImportError(
+                    "openai package is required. Install with: pip install 'openai>=1.3.0'"
+                )
         elif self.provider == "anthropic":
             self.api_key = api_key or config.anthropic_api_key
             if not self.api_key:
@@ -62,7 +64,9 @@ class ErrorAnalyzer:
                 from anthropic import Anthropic
                 self.client = Anthropic(api_key=self.api_key)
             except ImportError:
-                raise ImportError("anthropic package is required. Install with: pip install anthropic")
+                raise ImportError(
+                    "anthropic package is required. Install with: pip install 'anthropic>=0.7.0'"
+                )
         else:
             raise ValueError(f"Unsupported AI provider: {self.provider}")
 

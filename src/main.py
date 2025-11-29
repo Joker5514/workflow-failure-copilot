@@ -75,12 +75,19 @@ def process_failure(
     if can_fix and error_analysis:
         logger.info("Attempting auto-fix...")
 
-        # Get the workflow file content
+        # Get the workflow file content (try both .yml and .yaml extensions)
         try:
-            workflow_content = repo.get_contents(
-                f".github/workflows/{failed_workflow.workflow_name}.yml"
-            )
-            if not isinstance(workflow_content, list):
+            workflow_content = None
+            for ext in [".yml", ".yaml"]:
+                try:
+                    workflow_content = repo.get_contents(
+                        f".github/workflows/{failed_workflow.workflow_name}{ext}"
+                    )
+                    break
+                except Exception:
+                    continue
+
+            if workflow_content and not isinstance(workflow_content, list):
                 workflow_yaml = workflow_content.decoded_content.decode("utf-8")
 
                 # Generate fixes

@@ -257,11 +257,9 @@ class WorkflowRetry:
         Returns:
             True if the workflow can be retried, False otherwise.
         """
-        # Some conclusions can't be retried
-        if failed_workflow.conclusion in ("cancelled",):
-            return True
-
-        if failed_workflow.conclusion in ("failure", "timed_out"):
-            return True
-
-        return False
+        # Retryable conclusions:
+        # - failure: Standard failure, worth retrying
+        # - timed_out: May be transient, worth retrying
+        # - cancelled: User cancelled, may want to retry now
+        retryable_conclusions = ("failure", "timed_out", "cancelled")
+        return failed_workflow.conclusion in retryable_conclusions
