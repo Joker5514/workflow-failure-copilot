@@ -1,0 +1,79 @@
+name: Workflow Monitor
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: 'Enable debug logging'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run workflow monitor
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AI_PROVIDER: ${{ vars.AI_PROVIDER || 'openai' }}
+          AI_MODEL: ${{ vars.AI_MODEL || 'gpt-4' }}
+          GITHUB_ORG: ${{ vars.GITHUB_ORG }}
+          GITHUB_REPOS: ${{ vars.GITHUB_REPOS }}
+          CREATE_ISSUES: ${{ vars.CREATE_ISSUES || 'true' }}
+          ISSUE_ASSIGNEES: ${{ vars.ISSUE_ASSIGNEES }}
+          MAX_RETRIES: ${{ vars.MAX_RETRIES || '3' }}
+          LOOKBACK_HOURS: ${{ vars.LOOKBACK_HOURS || '24' }}
+        run: |
+          cd src
+          if [ "${{ inputs.debug }}" == "true" ]; then
+            python main.py monitor --debug
+          else
+            python main.py monitor
+          fi
+
+  # Optional: Run tests on schedule
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          python -m pytest tests/ -v --tb=short
