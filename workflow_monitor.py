@@ -48,7 +48,7 @@ def main():
         # Create empty log to satisfy artifact upload
         os.makedirs('logs', exist_ok=True)
         with open('logs/no_failures.txt', 'w') as f:
-            f.write(f"No failures detected at {datetime.now().isoformat()}\n")
+            f.write(f"No failures detected at {datetime.now().isoformat()}\n")  # Fixed
 
 if __name__ == '__main__':
     main()
