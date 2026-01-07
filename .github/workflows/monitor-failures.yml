@@ -35,7 +35,7 @@ jobs:
       
       - name: Upload monitoring logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: monitoring-logs-${{ github.run_id }}
           path: logs/
