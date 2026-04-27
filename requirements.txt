@@ -9,7 +9,7 @@ anthropic>=0.8.0
 
 # Web framework for dashboard
 flask>=3.0.0
-flask-cors>=4.0.0
+flask-cors>=6.0.2
 
 # Utilities
 pyyaml>=6.0.1
